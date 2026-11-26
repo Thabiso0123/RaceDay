@@ -1,0 +1,50 @@
+@model List<OrganiserEventDto>
+@{ ViewData["Title"] = "My events"; }
+<div class="page-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+        <h1 class="rd-heading">My events</h1>
+        <p class="text-muted mb-0">Create, edit and delete the events you organise.</p>
+    </div>
+    <a class="btn btn-rd" asp-action="Create"><i class="bi bi-plus-lg"></i> New event</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-calendar-plus"></i>
+        <p>No events yet.</p>
+        <a class="btn btn-rd" asp-action="Create">Create your first event</a>
+    </div>
+}
+else
+{
+    <div class="card rd-card">
+        <div class="table-responsive">
+            <table class="table align-middle rd-table mb-0">
+                <thead><tr><th></th><th>Event</th><th>Date</th><th>Location</th><th>Distance</th><th>Type</th><th class="text-center">Enrolled</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td><img class="thumb" src="@Url.Content(Display.Media(e.BannerImage))" alt="" /></td>
+                        <td><a class="fw-semibold" asp-controller="Events" asp-action="Details" asp-route-id="@e.Id">@e.Name</a></td>
+                        <td>@Display.Date(e.Date)</td>
+                        <td>@(e.Location ?? "-")</td>
+                        <td>@Display.Km(e.Distance)</td>
+                        <td>@e.EventType</td>
+                        <td class="text-center"><span class="count-pill">@e.EnrolmentCount</span></td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@e.Id"><i class="bi bi-pencil"></i> Edit</a>
+                            <a class="btn btn-sm btn-outline-dark" asp-controller="Categories" asp-action="Index" asp-route-eventId="@e.Id"><i class="bi bi-tags"></i></a>
+                            <form asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline"
+                                  data-confirm="Delete '@e.Name'? This cannot be undone.">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

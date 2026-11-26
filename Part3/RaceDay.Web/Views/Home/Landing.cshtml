@@ -1,0 +1,18 @@
+@{ ViewData["Title"] = "Run. Walk. Ride."; }
+<section class="rd-hero mb-5">
+    <div class="rd-hero-inner">
+        <span class="kicker">South Africa's race-day platform</span>
+        <h1 class="rd-heading display-3">Find your start line.<br />Own your finish.</h1>
+        <p class="lead">Browse running, walking and cycling events, enrol in seconds and track every result in one place. Organisers get the tools to run the day.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-rd btn-lg" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Sign in</a>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4 mb-4">
+    <div class="col-md-4"><div class="feature"><i class="bi bi-search"></i><h2 class="h4 rd-heading">Discover</h2><p>Filter upcoming road runs, walks and cycle events by type, name or location.</p></div></div>
+    <div class="col-md-4"><div class="feature"><i class="bi bi-ticket-perforated"></i><h2 class="h4 rd-heading">Enrol instantly</h2><p>Pick a category and you are in. Your enrolment status is always one click away.</p></div></div>
+    <div class="col-md-4"><div class="feature"><i class="bi bi-trophy"></i><h2 class="h4 rd-heading">Track results</h2><p>See your finish time and position, race after race, in your personal history.</p></div></div>
+</section>

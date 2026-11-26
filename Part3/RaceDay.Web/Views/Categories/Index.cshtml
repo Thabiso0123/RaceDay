@@ -1,0 +1,85 @@
+@model CategoriesPageViewModel
+@{ ViewData["Title"] = "Categories"; }
+<div class="page-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+        <h1 class="rd-heading">Categories</h1>
+        <p class="text-muted mb-0">@Model.Event.Name &middot; @Display.Date(Model.Event.Date)</p>
+    </div>
+    <a class="btn btn-outline-dark" asp-controller="Categories" asp-action="Index"><i class="bi bi-arrow-left"></i> Choose another event</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card rd-card">
+            <div class="card-body pb-0"><h2 class="h4 rd-heading">Current categories</h2></div>
+            @if (!Model.Categories.Any())
+            {
+                <div class="card-body pt-0 text-muted">No categories yet. Add the first one using the form.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle rd-table mb-0">
+                        <thead><tr><th>Name</th><th>Ages</th><th>Distance</th><th>Places</th><th>Fee</th></tr></thead>
+                        <tbody>
+                        @foreach (var c in Model.Categories)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@c.Name</td>
+                                <td>@Display.Ages(c.MinAge, c.MaxAge)</td>
+                                <td>@Display.Km(c.Distance)</td>
+                                <td>@(c.MaxParticipants?.ToString() ?? "Unlimited")</td>
+                                <td>@Display.Money(c.EntryFee)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card rd-card">
+            <div class="card-body p-4">
+                <h2 class="h4 rd-heading">Add a category</h2>
+                <form asp-action="Add" asp-route-eventId="@Model.Event.Id" method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Form.Name" class="form-label"></label>
+                        <input asp-for="Form.Name" class="form-control" placeholder="e.g. 10km Open or U18 5km" />
+                        <span asp-validation-for="Form.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label asp-for="Form.MinAge" class="form-label"></label>
+                            <input asp-for="Form.MinAge" type="number" min="0" max="120" class="form-control" />
+                            <span asp-validation-for="Form.MinAge" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Form.MaxAge" class="form-label"></label>
+                            <input asp-for="Form.MaxAge" type="number" min="0" max="120" class="form-control" />
+                            <span asp-validation-for="Form.MaxAge" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Form.Distance" class="form-label"></label>
+                            <input asp-for="Form.Distance" type="number" step="0.01" min="0" class="form-control" />
+                            <span asp-validation-for="Form.Distance" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Form.MaxParticipants" class="form-label"></label>
+                            <input asp-for="Form.MaxParticipants" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="Form.MaxParticipants" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Form.EntryFee" class="form-label"></label>
+                            <input asp-for="Form.EntryFee" type="number" step="0.01" min="0" class="form-control" />
+                            <span asp-validation-for="Form.EntryFee" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-rd w-100"><i class="bi bi-plus-lg"></i> Add category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

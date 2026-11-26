@@ -1,0 +1,49 @@
+@model EventEnrolmentsViewModel
+@{ ViewData["Title"] = "Enrolments"; }
+<div class="page-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+        <h1 class="rd-heading">Enrolments</h1>
+        <p class="text-muted mb-0">@Model.Event.Name &middot; @Display.Date(Model.Event.Date)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-rd" asp-controller="ResultsEntry" asp-action="Index" asp-route-eventId="@Model.Event.Id"><i class="bi bi-stopwatch"></i> Enter results</a>
+        <a class="btn btn-outline-dark" asp-action="Index" asp-route-eventId=""><i class="bi bi-arrow-left"></i> Other events</a>
+    </div>
+</div>
+
+@if (!Model.Enrolments.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-people"></i>
+        <p>Nobody has enrolled in this event yet.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="stat-card"><span>Total enrolled</span><strong>@Model.Enrolments.Count</strong></div></div>
+        @foreach (var g in Model.Enrolments.GroupBy(e => e.CategoryName).OrderBy(g => g.Key))
+        {
+            <div class="col-6 col-lg-3"><div class="stat-card"><span>@g.Key</span><strong>@g.Count()</strong></div></div>
+        }
+    </div>
+
+    <div class="card rd-card">
+        <div class="table-responsive">
+            <table class="table align-middle rd-table mb-0">
+                <thead><tr><th>Participant</th><th>Category</th><th>Enrolled on</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var e in Model.Enrolments)
+                {
+                    <tr>
+                        <td class="fw-semibold">@e.ParticipantName</td>
+                        <td>@e.CategoryName</td>
+                        <td>@e.EnrolmentDate.ToString("d MMM yyyy, HH:mm")</td>
+                        <td><span class="status-pill @Display.StatusClass(e.Status)">@e.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,41 @@
+RaceDay — Entity Relationships
+
+Plain-English description of how each entity relates to the others matching the
+crow's-foot cardinality shown in the ERD.
+
+Role - User
+One Role has many Users. Each User belongs to exactly one Role (either Organiser or
+Participant). This relationship drives role-based access control throughout the API.
+
+User - Event
+One User, acting as an Organiser, can create many Events. Each Event belongs to exactly
+one Organiser.
+
+Event - Category
+One Event has many Categories. Each Category (distance division, e.g. "10km") belongs 
+to exactly one Event.
+
+User - Enrolment
+One User acting as a Participant can create many Enrolments. Each Enrolment belongs to
+exactly one Participant.
+
+Category - Enrolment
+One Category has many Enrolments. Each Enrolment (a Participant entering a race) belongs
+to exactly one Category. Enrolment acts as the junction table linking Users to Categories
+and by extension to Events.
+
+Enrolment - Result
+One Enrolment produces at most one Result. A Result only exists once the race has taken
+place and the Organiser has captured a finish time and position — so this relationship is
+one-to-zero-or-one, not mandatory.
+
+Summary of cardinality
+
+| From | To | Cardinality |
+
+| Role | User | 1 : M |
+| User (Organiser) | Event | 1 : M |
+| Event | Category | 1 : M |
+| User (Participant) | Enrolment | 1 : M |
+| Category | Enrolment | 1 : M |
+| Enrolment | Result | 1 : 0..1 |

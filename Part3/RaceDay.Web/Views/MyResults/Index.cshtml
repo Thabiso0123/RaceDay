@@ -1,0 +1,58 @@
+@model List<ResultDto>
+@{
+    ViewData["Title"] = "My results";
+    var best = Model.Where(r => r.Position.HasValue).OrderBy(r => r.Position).FirstOrDefault();
+}
+<div class="page-head">
+    <h1 class="rd-heading">My results</h1>
+    <p class="text-muted mb-0">Your race history. Results appear here once the organiser has published them.</p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-trophy"></i>
+        <p>No results yet. Once an organiser publishes your finish time it will show up here.</p>
+        <a class="btn btn-rd" asp-controller="MyEnrolments" asp-action="Index">View my enrolments</a>
+    </div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3"><div class="stat-card"><span>Races finished</span><strong>@Model.Count</strong></div></div>
+        @if (best is not null)
+        {
+            <div class="col-sm-6 col-lg-3"><div class="stat-card"><span>Best position</span><strong>@Display.Ordinal(best.Position!.Value)</strong></div></div>
+        }
+    </div>
+
+    <div class="card rd-card">
+        <div class="table-responsive">
+            <table class="table align-middle rd-table mb-0">
+                <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr></thead>
+                <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td><a class="fw-semibold" asp-controller="Events" asp-action="Details" asp-route-id="@r.EventId">@r.EventName</a></td>
+                        <td>@Display.Date(r.EventDate)</td>
+                        <td>@r.CategoryName</td>
+                        <td class="time-cell">@Display.FinishTime(r.FinishTime)</td>
+                        <td>
+                            @if (r.Position.HasValue)
+                            {
+                                <strong>@Display.Ordinal(r.Position.Value)</strong>
+                                @if (r.TotalFinishers > 0)
+                                {
+                                    <span class="text-muted"> out of @r.TotalFinishers finishers</span>
+                                }
+                            }
+                            else { <span class="text-muted">-</span> }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,48 @@
+# Start the platform with: docker compose up --build
+# Web: http://localhost:8080
+# API/Swagger: http://localhost:5100/swagger
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "RaceDay_Str0ng!Pass"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  # Azurite remains available locally; the API uses Azure when the .env value is set.
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite:/data
+
+  api:
+    build: ./RaceDay.Api/RaceDay.Api
+    depends_on:
+      - sqlserver
+      - azurite
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=RaceDayDB;User Id=sa;Password=RaceDay_Str0ng!Pass;TrustServerCertificate=True"
+      AzureBlob__ConnectionString: "${AZURE_STORAGE_CONNECTION_STRING:?Set AZURE_STORAGE_CONNECTION_STRING in .env}"
+      AzureBlob__Container: "raceday-images"
+    ports:
+      - "5100:8080"
+
+  web:
+    build: ./Part3/RaceDay.Web
+    depends_on:
+      - api
+    environment:
+      Api__BaseUrl: "http://api:8080/"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sqldata:
+  azurite:

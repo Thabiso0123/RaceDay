@@ -1,0 +1,65 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="page-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+        <h1 class="rd-heading">Organiser dashboard</h1>
+        <p class="text-muted mb-0">Your events at a glance.</p>
+    </div>
+    <a class="btn btn-rd" asp-controller="ManageEvents" asp-action="Create"><i class="bi bi-plus-lg"></i> New event</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="stat-card"><span>Events created</span><strong>@Model.TotalEvents</strong></div></div>
+    <div class="col-6 col-lg-3"><div class="stat-card"><span>Total enrolments</span><strong>@Model.TotalEnrolments</strong></div></div>
+    <div class="col-6 col-lg-3"><div class="stat-card"><span>Upcoming events</span><strong>@Model.UpcomingCount</strong></div></div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-accent">
+            <span>Next event</span>
+            @if (Model.NextEvent is not null)
+            {
+                <strong class="stat-sm">@Model.NextEvent.Date.ToString("d MMM yyyy")</strong>
+            }
+            else
+            {
+                <strong class="stat-sm">None scheduled</strong>
+            }
+        </div>
+    </div>
+</div>
+
+@if (!Model.Events.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-calendar-plus"></i>
+        <p>You have not created any events yet.</p>
+        <a class="btn btn-rd" asp-controller="ManageEvents" asp-action="Create">Create your first event</a>
+    </div>
+}
+else
+{
+    <div class="card rd-card">
+        <div class="card-body pb-0"><h2 class="h4 rd-heading">Enrolments per event</h2></div>
+        <div class="table-responsive">
+            <table class="table align-middle rd-table mb-0">
+                <thead><tr><th>Event</th><th>Date</th><th>Type</th><th class="text-center">Categories</th><th class="text-center">Enrolments</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var e in Model.Events)
+                {
+                    var past = e.Date < DateOnly.FromDateTime(DateTime.Today);
+                    <tr>
+                        <td class="fw-semibold">@e.Name</td>
+                        <td>@Display.Date(e.Date) @if (past) { <span class="badge text-bg-secondary ms-1">Finished</span> }</td>
+                        <td><i class="bi @Display.TypeIcon(e.EventType)"></i> @e.EventType</td>
+                        <td class="text-center">@e.CategoryCount</td>
+                        <td class="text-center"><span class="count-pill">@e.EnrolmentCount</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-dark" asp-controller="EventEnrolments" asp-action="Index" asp-route-eventId="@e.Id">Enrolments</a>
+                            <a class="btn btn-sm btn-outline-dark" asp-controller="ResultsEntry" asp-action="Index" asp-route-eventId="@e.Id">Results</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

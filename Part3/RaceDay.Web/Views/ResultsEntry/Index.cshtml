@@ -1,0 +1,67 @@
+@model ResultsEntryViewModel
+@{ ViewData["Title"] = "Results"; }
+<div class="page-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+        <h1 class="rd-heading">Results</h1>
+        <p class="text-muted mb-0">@Model.Event.Name &middot; @Display.Date(Model.Event.Date)</p>
+    </div>
+    <a class="btn btn-outline-dark" asp-action="Index" asp-route-eventId=""><i class="bi bi-arrow-left"></i> Other events</a>
+</div>
+
+@if (!Model.EventHasFinished)
+{
+    <div class="alert alert-warning"><i class="bi bi-info-circle"></i> This event has not taken place yet. Results are normally captured once the event concludes.</div>
+}
+
+@if (!Model.Rows.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-people"></i>
+        <p>No participants are enrolled, so there is nothing to record yet.</p>
+    </div>
+}
+else
+{
+    var captured = Model.Rows.Count(r => r.Result is not null);
+    <p class="text-muted">@captured of @Model.Rows.Count results published. Published results are visible to participants immediately and cannot be changed here.</p>
+
+    <div class="card rd-card">
+        <div class="table-responsive">
+            <table class="table align-middle rd-table mb-0">
+                <thead><tr><th>Participant</th><th>Category</th><th>Status</th><th style="min-width: 22rem">Finish time and position</th></tr></thead>
+                <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td class="fw-semibold">@row.Enrolment.ParticipantName</td>
+                        <td>@row.Enrolment.CategoryName</td>
+                        <td><span class="status-pill @Display.StatusClass(row.Enrolment.Status)">@row.Enrolment.Status</span></td>
+                        <td>
+                            @if (row.Result is not null)
+                            {
+                                <span class="published-pill"><i class="bi bi-check-circle-fill"></i> Published</span>
+                                <span class="time-cell ms-2">@Display.FinishTime(row.Result.FinishTime)</span>
+                                <span class="ms-2">@(row.Result.Position.HasValue ? Display.Ordinal(row.Result.Position.Value) : "")</span>
+                            }
+                            else
+                            {
+                                <form asp-action="Capture" method="post" class="result-form">
+                                    <input type="hidden" name="EventId" value="@Model.Event.Id" />
+                                    <input type="hidden" name="ParticipantId" value="@row.Enrolment.ParticipantId" />
+                                    <input type="number" name="Hours" min="0" max="99" value="0" class="form-control form-control-sm" aria-label="Hours" title="Hours" />
+                                    <span>:</span>
+                                    <input type="number" name="Minutes" min="0" max="59" value="0" class="form-control form-control-sm" aria-label="Minutes" title="Minutes" />
+                                    <span>:</span>
+                                    <input type="number" name="Seconds" min="0" max="59" value="0" class="form-control form-control-sm" aria-label="Seconds" title="Seconds" />
+                                    <input type="number" name="Position" min="1" placeholder="Pos." class="form-control form-control-sm pos" aria-label="Finishing position" title="Finishing position" required />
+                                    <button type="submit" class="btn btn-rd btn-sm">Publish</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

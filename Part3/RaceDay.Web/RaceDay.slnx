@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Part3/">
+    <Project Path="Part3/RaceDay.Web/RaceDay.Web.csproj" />
+  </Folder>
+  <Folder Name="/RaceDay.Api/">
+    <Project Path="RaceDay.Api/RaceDay.Api/RaceDay.Api.csproj" />
+    <Project Path="RaceDay.Api/RaceDay.Tests/RaceDay.Tests.csproj" />
+  </Folder>
+</Solution>
